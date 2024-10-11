@@ -13,7 +13,7 @@ library(ggplot2)
 
 dickens <- read_csv("data/dickens/wp.csv")
 # or
-# dickens <- read_csv("")
+dickens <- read_csv("https://raw.githubusercontent.com/schwilklab/biol3405-data/refs/heads/main/data/dickens/wp.csv")
 species <- read_csv("data/dickens/species.csv")
 leaves <- read_csv("data/dickens/leaf_area.csv")
 
