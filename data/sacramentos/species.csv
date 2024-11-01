@@ -15,12 +15,12 @@ CERBRE,Cercocarpus,breviflorus,Rosaceae,shrub,Check id
 (broad-leaf-aster),,,Asteraceae,subshrub,broad deltoid leaves
 NOLMIC,Nolinia,microcarpa,Asparagaceae,succulent,
 (little-mesquite),,,Fabaceae,shrub,
-KOBSPI,Koberlinia,spinosa,Koeberliniaceae,shrub,or Caperaceae
+KOBSPI,Koberlinia,spinosa,Koeberliniaceae,shrub,
 GYMGLU,,,Asteraceae,,
 RHUTRI,Rhus,trilobata,Anacardiaceae,shrub,
 ATRCAN,Atriplex,canescens,Chenopodiaceae,shrub,
 YUCBAC,Yucca,baccata,Asparagaceae,succulent,
-(sagebrush-like),,,,,
+(sagebrush-like),,,,,Maybe Asteraceae
 ABICON,Abies,concolor,Pinaceae,tree,
 PSEMEN,Pseudotsuga,menziesii,Pinaceae,tree,
 POPTRE,Populus,tremuloides,Salicaceae,tree,
@@ -30,3 +30,6 @@ PINSTR,Pinus,strobiformis,Pinaceae,tree,
 PINPON,Pinus,ponderosa,Pinaceae,tree,
 HOLDIS,Holodiscus,discolor,Rosaceae,shrub,
 PRUSER,Prunus,serotina,Rosaceae,tree,
+(little-mesquite),,,Fabaceae,shrub,
+(condalia),,,,shrub,
+RHUMIC,Rhus,microphylla,Anacardeaceae,shrub,
