@@ -47,8 +47,7 @@ ggplot(dickens, aes(predawn_wp, midday_wp, color=genus)) +
   geom_point(size=3) +
   geom_smooth(method="lm", se=FALSE)
 
-plot1
-ggsave("plot1.pdf", plot1)
+ggsave("results/dickens_pd_vs_md.pdf")
 
 ggplot(dickens, aes(genus, predawn_wp-midday_wp)) +
   geom_boxplot()
@@ -60,5 +59,5 @@ ggplot(dickens, aes(predawn_wp, predawn_wp-midday_wp, color=genus)) +
 
 ## Species comparisons
 
-ggplot(genus_means, aes(mean_LMA, mean_pd)) +
-  geom_point()
+ggplot(genus_means, aes(mean_LMA, mean_pd, color=genus)) +
+  geom_point(size=3)

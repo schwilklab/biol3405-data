@@ -180,7 +180,3 @@ con.plot <- ggplot(conifer.cover, aes(elev, pcover)) + geom_boxplot() +
   ylab("Proportional cover")
 
 con.plot
-
-
-
-
