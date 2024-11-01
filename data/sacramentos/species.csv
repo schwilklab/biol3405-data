@@ -1,0 +1,32 @@
+spcode,genus,specific_epithet,family,growth_form,notes
+LARTRI,Larrea,tridentata,Zygophyllaceae,shrub,
+PROGLA,Prosopis,glandulosa,Fabaceae,shrub/tree,
+PARINC,Parthenium,incanum,Acanthaceae,shrub,
+OPUMAC,Opuntia,macrocentra,Cactaceae,succulent,
+PORSCO,Porophylluam scoparium,,Asteraceae,subshrub,
+CHILIN,Chilopsis,linearis,Bignoniaceae,tree,
+BRILAC,Brickellia,laciniata,Acanthaceae,shrub,
+JUNMON,Juniperus,monosperma,Cupressaceae,shrub/tree,
+JUNDEP,Juniperus,deppeana,Cupressaceae,tree,
+MAHHAE,Mahonia,haematocarpa,Berberidaceae,shrub,
+PINEDU,Pinus,edulis,Pinaceae,tree,
+CERBRE,Cercocarpus,breviflorus,Rosaceae,shrub,Check id
+(unk),,,Asteraceae,subshrub,fine leaves
+(broad-leaf-aster),,,Asteraceae,subshrub,broad deltoid leaves
+NOLMIC,Nolinia,microcarpa,Asparagaceae,succulent,
+(little-mesquite),,,Fabaceae,shrub,
+KOBSPI,Koberlinia,spinosa,Koeberliniaceae,shrub,or Caperaceae
+GYMGLU,,,Asteraceae,,
+RHUTRI,Rhus,trilobata,Anacardiaceae,shrub,
+ATRCAN,Atriplex,canescens,Chenopodiaceae,shrub,
+YUCBAC,Yucca,baccata,Asparagaceae,succulent,
+(sagebrush-like),,,,,
+ABICON,Abies,concolor,Pinaceae,tree,
+PSEMEN,Pseudotsuga,menziesii,Pinaceae,tree,
+POPTRE,Populus,tremuloides,Salicaceae,tree,
+ROSWOO,Rosa,woodsii,Rosaceae,shrub,
+ROBNEO,Robinia,neomexicana,Fabaceae,shrub/tree,
+PINSTR,Pinus,strobiformis,Pinaceae,tree,
+PINPON,Pinus,ponderosa,Pinaceae,tree,
+HOLDIS,Holodiscus,discolor,Rosaceae,shrub,
+PRUSER,Prunus,serotina,Rosaceae,tree,
