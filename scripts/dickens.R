@@ -9,64 +9,56 @@ library(readr)
 library(dplyr)
 library(ggplot2)
 
-# read data from csv files
-
-dickens <- read_csv("data/dickens/wp.csv")
-dickens <- read.csv("data/dickens/wp.csv", stringsAsFactors=FALSE)
-
-
-# or
-dickens <- read_csv("https://raw.githubusercontent.com/schwilklab/biol3405-data/refs/heads/main/data/dickens/wp.csv")
-
-dickens$leaf_area <- NULL
-dickens$dry_mass<- NULL
-
+# read data from csv filess
+wp <- read_csv("data/dickens/wp.csv")
 species <- read_csv("data/dickens/species.csv")
 #species <- read.csv("data/dickens/species.csv", stringsAsFactors=FALSE)
 
 leaves <- read_csv("data/dickens/leaf_area.csv")
 
+## Calculate LMA and leaf size trait:
 leaves <- mutate(leaves, LMA=dry_mass/leaf_area, leaf_size=leaf_area/n_leaves)
 
-wp <- left_join(dickens, species)
-#wp <- merge(dickens, species)
-wp <- left_join(wp, leaves)
+# Merge water potential data with leaf trait data and then with species info
 
-wp
+dickens <- left_join(wp, leaves)
+dickens <- left_join(dickens, species)
 
-nrow(wp)
-names(wp)
+## Look at all data:
+dickens
 
+nrow(dickens)
+# 28
 
-wp_genus <- group_by(wp, genus)
-sp_sum <- summarize(wp_genus,
-                    pd=mean(predawn_wp),
-                    md=mean(midday_wp),
-                    LMA=mean(LMA, na.rm=TRUE))
+## print column names:
+names(dickens)
 
-sp_sum
+## Summarize water potential and trait values by genus. This is the same as
+## sumamrizing by species because we have no genera with more than one species
+## here.
+by_genus <- group_by(dickens, genus)
+genus_means <- summarize(by_genus, mean_pd=mean(predawn_wp), mean_md=mean(midday_wp),
+          mean_lsize = mean(leaf_size), mean_LMA = mean(LMA))
+
 
 
 # Water potential figures
-
-
-plot1 <- ggplot(wp, aes(x=predawn_wp, y=midday_wp, color=genus)) +
+ggplot(dickens, aes(predawn_wp, midday_wp, color=genus)) +
   geom_point(size=3) +
   geom_smooth(method="lm", se=FALSE)
 
 plot1
 ggsave("plot1.pdf", plot1)
 
-ggplot(wp, aes(genus, predawn_wp-midday_wp)) +
+ggplot(dickens, aes(genus, predawn_wp-midday_wp)) +
   geom_boxplot()
 
-
-
-ggplot(wp, aes(predawn_wp, predawn_wp-midday_wp, color=genus)) +
+ggplot(dickens, aes(predawn_wp, predawn_wp-midday_wp, color=genus)) +
   geom_point(size=3)
 
 
 
 ## Species comparisons
 
-#wp_leaf_traits <- summarize(
+ggplot(genus_means, aes(mean_LMA, mean_pd)) +
+  geom_point()
