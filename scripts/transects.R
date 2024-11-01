@@ -1,22 +1,26 @@
-# DWS 2024 
-library(ggplot2)
+# 2024-11-01 Code for summarizing and analyzing woody plant community data
+# collected by BIOL 3404 class in the Sacramento Mountains of New Mexico on
+# September 28 and 29, 2024.
+
 library(dplyr)
+library(ggplot2)
 library(stringr)
-library(readr) # To show alternative to read.csv()
 
 ## Read transects
 transects <- read.csv("./data/sacramentos/transects.csv", stringsAsFactors= FALSE)
-
 
 ## Turn transect column into globally unique ids. This is necessary for later
 ## expand.grid and gives us a single column that uniquely identifies a
 ## transect. If we did not do this, we would need two columns, "site" and
 ## "transect" to identify a given transect. Also calculate the distance each
 ## plant covers for every entry
-transects <- mutate(transects,  group=str_sub(transect,1,1),
-                    transect = paste(site, transect, sep="."),
-                    dist = stop-start)
 
+## DWS: Some folks messed up start and stop I assume by switching so we will
+## take absolute value for now:
+
+transects <- mutate(transects,  group=substr(transect,1,1),
+                    transect = paste(site, transect, sep="."),
+                    dist = abs(stop-start))
 
 ## Now just get the cover by species. We don't need the raw start/stop points.
 ## Note that each transect was 50 m long, so the proportional cover of any
@@ -42,6 +46,8 @@ cover <- full_join(cover, all.transects.species)
 ## same as:
 # merge(cover, all.transects.species, all=TRUE)
 
+## ("joins" are the dplyr way, merge is base R)
+
 ## The above join/merge inserted NA for missing combinations of species and
 ## transects. NA should really be zero (missing species means zero cover)
 cover$cover[is.na(cover$cover)] <- 0
@@ -59,6 +65,18 @@ cover <- mutate(cover, site = str_split_fixed(transect, "\\.", n=2)[,1])
 species <- read.csv("./data/sacramentos/species.csv", stringsAsFactors=FALSE,
                     na.strings = "")
 
+## DWS: let's make sure all of our species codes are in the species.csv data:
+
+## DWS: as of 2024-11-01 I fixed all missing. Still some unknowns
+tspecies <- unique(transects$spcode)
+length(tspecies)
+# was 51, now 41
+sspecies <- species$spcode
+length(sspecies)
+
+unmatched <- tspecies[! tspecies %in% sspecies]
+unmatched
+
 # Merge species info with transect data. Use merge() function and remember that
 # we want all rows from the transects data frame in the result. We don't need
 # unmatched rows in species as the file contains the full species list over
@@ -66,23 +84,29 @@ species <- read.csv("./data/sacramentos/species.csv", stringsAsFactors=FALSE,
 cover <- merge(cover, species, all.x=TRUE)
 
 # Read in elevations of each site and merge with cover data
-## sites <- read.csv(
-##            stringsAsFactors=FALSE, na.strings = "")
-## # Although elevation is numeric, it is really a categorical variable with six
-## # values. Let's ensure that ggplot will treat it as a categorical variable.
-## sites$elev <- as.factor(as.character(sites$elev))
+sites <- read.csv("./data/sacramentos/sites.csv", stringsAsFactors=FALSE, na.strings = "")
+
+## Although elevation is numeric, it is really a categorical variable with six
+## values. Let's ensure that ggplot will treat it as a categorical variable.
+sites$elev <- as.factor(as.character(sites$elev))
 
 ## alternatively, we could use readr::read_csv with a column type
-## specification:
+## specification.
 # sites <- read_csv(
-#    "http://r-research-tool.schwilk.org/data/BBNP_sites.csv",
+#    "./data/sacramentos/sites.csv",
 #    col_types = list(col_character(), col_factor())
 # )
 
-## DWS: note, that this method avoids something that is imperfect above. You
-## might want to come back to this later after looking at your figures.
+## Since we used the first method, we need to get the order of the factor
+## right. We lucked out here given the order encountered is correct. But if the
+## data changes this could be messed up. For now it is ok. Let's proive that
+## the factor levels are ordered by elevation:
 
+## > sites$elev
+## [1] 1454 1802 2042 2500 2744
+## Levels: 1454 1802 2042 2500 2744
 
+## Good. Or were would need to use as.factor()
 
 cover <- left_join(cover, sites)
 
@@ -95,13 +119,68 @@ rm(all.transects.species, sites, species, transects)
 ###############################################################################
 
 ## Summarize proportional cover by transect and by growth form
-by_elev_gf <- group_by(cover, elev, transect, gf)
+by_elev_gf <- group_by(cover, elev, transect, growth_form)
 gf.cover <- summarize(by_elev_gf, pcover = sum(cover))
 
 ## Just pull out trees
-trees <- subset(gf.cover, gf=="tree") # gf is growth form
+trees <- subset(gf.cover, growth_form=="tree")
+## Note that testing equality is "==". "=" is used only in setting argument
+## values in function calls
 
-## and plot proportional tree cover by site
+# and plot proportional tree cover by site
 ggplot(trees, aes(elev, pcover)) + geom_boxplot() +
   xlab("Elevation (m)") +
   ylab("Proportional cover")
+
+ggsave("results/tree_cover_by_elev.pdf")
+
+## DWS: We could also pull out both "tree" and "shrub/tree" together, but we
+## need to do this BEFORE summarizing or we will end up with two values for
+## each transect (one for the tree gf and one for "shrub_tree". We want a single
+## combined value.
+trees <- subset(cover, grepl("tree", growth_form, fixed = TRUE))
+trees.cover <- group_by(trees, transect, elev) %>% summarize(pcover = sum(cover))
+ggplot(trees.cover, aes(elev, pcover)) + geom_boxplot() +
+  xlab("Elevation (m)") +
+  ylab("Proportional cover")
+
+
+# succulents?
+
+suc <- subset(gf.cover, grepl("succulent", growth_form, fixed = TRUE))
+ggplot(suc, aes(elev, pcover)) + geom_boxplot() +
+  xlab("Elevation (m)") +
+  ylab("Proportional cover")
+
+
+
+## Let's try summarizing by a plant family
+by_elev_family <- group_by(cover, elev, transect, family)
+family.cover <- summarize(by_elev_family, pcover = sum(cover))
+
+## Look at Fabaceae (the bean/pea family):
+fabaceae <- subset(family.cover, family=="Fabaceae")
+
+fab.plot <- ggplot(fabaceae, aes(elev, pcover)) + geom_boxplot() +
+  xlab("Elevation (m)") +
+  ylab("Proportional cover")
+
+fab.plot
+
+
+## What about conifers?
+conifer_families <- c("Pinaceae", "Cupressaceae")
+## We need to start at with species cover data not family here. Think about why!
+
+conifers <-  subset(cover, family %in% conifer_families)
+conifer.cover <- group_by(conifers, elev, transect) %>% summarize(pcover=sum(cover))
+
+con.plot <- ggplot(conifer.cover, aes(elev, pcover)) + geom_boxplot() +
+  xlab("Elevation (m)") +
+  ylab("Proportional cover")
+
+con.plot
+
+
+
+
