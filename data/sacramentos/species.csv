@@ -11,7 +11,7 @@ JUNDEP,Juniperus,deppeana,Cupressaceae,tree,
 MAHHAE,Mahonia,haematocarpa,Berberidaceae,shrub,
 PINEDU,Pinus,edulis,Pinaceae,tree,
 CERBRE,Cercocarpus,breviflorus,Rosaceae,shrub,Check id
-(unk),,,Asteraceae,subshrub,fine leaves
+(unk-fine),,,Asteraceae,subshrub,fine leaves
 (broad-leaf-aster),,,Asteraceae,subshrub,broad deltoid leaves
 NOLMIC,Nolinia,microcarpa,Asparagaceae,succulent,
 (little-mesquite),,,Fabaceae,shrub,
