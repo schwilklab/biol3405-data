@@ -38,7 +38,7 @@ names(dickens)
 ## here.
 by_genus <- group_by(dickens, genus)
 genus_means <- summarize(by_genus, mean_pd=mean(predawn_wp), mean_md=mean(midday_wp),
-          mean_lsize = mean(leaf_size), mean_LMA = mean(LMA))
+          mean_lsize = mean(leaf_size, na.rm=TRUE), mean_LMA = mean(LMA, na.rm=TRUE))
 
 
 
