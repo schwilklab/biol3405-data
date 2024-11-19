@@ -18,9 +18,10 @@ transects <- read.csv("./data/sacramentos/transects.csv", stringsAsFactors= FALS
 ## DWS: Some folks messed up start and stop I assume by switching so we will
 ## take absolute value for now:
 
-transects <- mutate(transects,  group=substr(transect,1,1),
-                    transect = paste(site, transect, sep="."),
-                    dist = abs(stop-start))
+transects <- transects %>% 
+  mutate(group=substr(transect,1,1),
+         transect = paste(site, transect, sep="."),
+         dist = stop-start)
 
 ## Now just get the cover by species. We don't need the raw start/stop points.
 ## Note that each transect was 50 m long, so the proportional cover of any
@@ -110,9 +111,9 @@ sites$elev <- as.factor(as.character(sites$elev))
 
 cover <- left_join(cover, sites)
 
-# 'cover' is the tidy dataframe (tibble) for all further use. We can delete
-# the intermediate objects to keep our environment cleaner:
-rm(all.transects.species, sites, species, transects)
+# 'cover' is the tidy dataframe (tibble) for all further use. We can delete the
+# intermediate objects to keep our environment cleaner (but I wont for now).
+# rm(all.transects.species, sites, species, transects)
 
 ###############################################################################
 ## Some quick and dirty example analyses and figures
@@ -180,3 +181,33 @@ con.plot <- ggplot(conifer.cover, aes(elev, pcover)) + geom_boxplot() +
   ylab("Proportional cover")
 
 con.plot
+
+
+###############################################################################
+## Some ideas for investigating placement along a transect (overlap, neighbors)
+###############################################################################
+
+# create boolean "overlap" that is true if previous entry overlaps with current
+# and is different species
+neighbors <- transects %>% arrange(site, transect, start) %>%
+  left_join(species) %>%
+  group_by(transect) %>%
+  mutate(overlap = start < lag(stop) & (spcode != lag(spcode)),
+         prev_gf = lag(growth_form))
+
+
+nrow(filter(neighbors, overlap))
+# 213 overlaps
+
+# of overlaps of same growth form:
+nrow(filter(neighbors, overlap & growth_form != prev_gf))
+# 117
+
+# So 96 are same gf and 117 are different. Testing this requires some null
+# model expectation probably based on probability of any neighbor being same
+# growth form.
+
+
+
+
+  
