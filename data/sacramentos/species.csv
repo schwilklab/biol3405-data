@@ -12,10 +12,10 @@ spcode,genus,specific_epithet,family,growth_form,notes
 (sagebrush-like),,,,,Maybe Asteraceae
 (unk-fine),,,Asteraceae,subshrub,fine leaves
 ABICON,Abies,concolor,Pinaceae,tree,
-ACEGLA,Acer,glabrum,Acanthaceae,tree,
+ACEGLA,Acer,glabrum,Sapandaceae,tree,
 AGANEO,Agave,neomexicana,Asparagaceae,succulent,
 ATRCAN,Atriplex,canescens,Chenopodiaceae,shrub,
-BRILAC,Brickellia,laciniata,Acanthaceae,shrub,
+BRILAC,Brickellia,laciniata,Asteraceae,shrub,
 CERBRE,Cercocarpus,breviflorus,Rosaceae,shrub,Check id
 CHILIN,Chilopsis,linearis,Bignoniaceae,tree,
 CHRMEX,Chrysactinia,mexicana,Asteraceae,subshrub,
@@ -30,7 +30,7 @@ LARTRI,Larrea,tridentata,Zygophyllaceae,shrub,
 MAHHAE,Mahonia,haematocarpa,Berberidaceae,shrub,
 NOLMIC,Nolinia,microcarpa,Asparagaceae,succulent,
 OPUMAC,Opuntia,macrocentra,Cactaceae,succulent,
-PARINC,Parthenium,incanum,Acanthaceae,shrub,
+PARINC,Parthenium,incanum,Asteraceae,shrub,
 PINEDU,Pinus,edulis,Pinaceae,tree,
 PINPON,Pinus,ponderosa,Pinaceae,tree,
 PINSTR,Pinus,strobiformis,Pinaceae,tree,
