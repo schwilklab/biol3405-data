@@ -65,6 +65,11 @@ cover <- mutate(cover, site = str_split_fixed(transect, "\\.", n=2)[,1])
 ## considered the "" string.
 species <- read.csv("./data/sacramentos/species.csv", stringsAsFactors=FALSE,
                     na.strings = "")
+# This includes "defense" as a trait with values U, L or A. Let's get a binary
+# version of the trait as well:
+
+species <- mutate(species, armed = defense %in% c("L", "A"))
+
 
 ## DWS: let's make sure all of our species codes are in the species.csv data:
 
@@ -181,6 +186,13 @@ con.plot <- ggplot(conifer.cover, aes(elev, pcover)) + geom_boxplot() +
   ylab("Proportional cover")
 
 con.plot
+
+## By defense
+by_defense <- cover %>% group_by(elev, transect, armed)
+armed_cover <- summarize(by_defense, pcover = sum(cover))
+
+ggplot(armed_cover, aes(elev, pcover, color=armed)) +
+  geom_boxplot()
 
 
 ###############################################################################
