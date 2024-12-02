@@ -183,7 +183,27 @@ con.plot <- ggplot(conifer.cover, aes(elev, pcover)) + geom_boxplot() +
 con.plot
 
 
+###############################################################################
+## Some ideas for investigating placement along a transect (overlap, neighbors)
+###############################################################################
+
+# create boolean "overlap" that is true if previous entry overlaps with current
+# and is different species
+neighbors <- transects %>% arrange(site, transect, start) %>%
+  left_join(species) %>%
+  group_by(transect) %>%
+  mutate(overlap = start < lag(stop) & (spcode != lag(spcode)),
+         prev_gf = lag(growth_form))
 
 
+nrow(filter(neighbors, overlap))
+# 213 overlaps
 
-  
+# of overlaps of same growth form:
+nrow(filter(neighbors, overlap & growth_form != prev_gf))
+# 117
+
+# So 96 are same gf and 117 are different. Testing this requires some null
+# model expectation probably based on probability of any neighbor being same
+# growth form.
+
