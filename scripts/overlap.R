@@ -3,20 +3,25 @@
 ## 2024-11-22
 
 ## Run transects.R first:
-source("./transects.R")
+source("./scripts/transects.R")
 
 
 
 ###############################################################################
 ## Some ideas for investigating placement along a transect (overlap, neighbors)
 ###############################################################################
+###############################################################################
+## Merge transect data with trait data
+transects <- left_join(transects, species)
+
+
 
 # create boolean "overlap" that is true if previous entry overlaps with current
 # and is different species
 neighbors <- transects %>% arrange(site, transect, start) %>%
-  left_join(species) %>%
   group_by(transect) %>%
-  mutate(overlap = start < lag(stop) & (spcode != lag(spcode)),
+  mutate(overlap_dist = start - lag(stop),
+         overlap = start < lag(stop) & (spcode != lag(spcode)),
          prev_gf = lag(growth_form))
 
 
@@ -33,6 +38,13 @@ nrow(filter(neighbors, overlap & growth_form != prev_gf))
 
 ## One could do this by elevation...
 
+
+mean(filter(neighbors, growth_form != prev_gf)$overlap_dist, na.rm=TRUE)
+mean(filter(neighbors, growth_form == prev_gf)$overlap_dist, na.rm=TRUE)
+
+
+
+
 ###############################################################################
 ## Null model for overlap question:
 
@@ -47,15 +59,13 @@ randomize_transect <- function(x) {
 ## Calculate our test statistic for proportion of overlaps that involve
 ## different growth forms
 calculate_overlap_stat <- function(x) {
-  neighbors <- x %>% arrange(site, transect, start) %>%
-  left_join(species, by="spcode") %>%  # This is inefficient, we could replace
-                                     # spcode with gf first to make this
-                                     # faster.
+  neighbors <- x %>% arrange(transect, start) %>%
   group_by(transect) %>%
   mutate(overlap = start < lag(stop) & (spcode != lag(spcode)),
          prev_gf = lag(growth_form))
   t_stat <- nrow(filter(neighbors, overlap & growth_form != prev_gf)) /
     nrow(filter(neighbors, overlap))
+  print(nrow(x))
   return(t_stat)
 }
 
@@ -65,7 +75,6 @@ randomize_and_calculate <- function(x) {
   return(calculate_overlap_stat(r_transects))
 }
 
-       
 
 
 null_dist <- replicate(10000, randomize_and_calculate(transects))
@@ -77,7 +86,14 @@ null_ecdf <- ecdf(null_dist)
 
 null_ecdf(calculate_overlap_stat(transects))
 # 0.3569
-
+                                                                                           
 # So, not in tails at all. Our stat is below the mean, but nearly 36% of null
 # values are lower. No significance.
   
+
+## overlap by elevation
+
+by_elev <- transects %>% group_by(elev)
+
+dplyr::summarize(by_elev, o_stat = calculate_overlap_stat(pick(transect,start,stop,growth_form,spcode)))
+

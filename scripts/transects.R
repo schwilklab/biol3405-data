@@ -96,6 +96,10 @@ sites <- read.csv("./data/sacramentos/sites.csv", stringsAsFactors=FALSE, na.str
 ## values. Let's ensure that ggplot will treat it as a categorical variable.
 sites$elev <- as.factor(as.character(sites$elev))
 
+# might be useful in transects data too:
+transects <- transects %>% left_join(sites)
+
+
 ## alternatively, we could use readr::read_csv with a column type
 ## specification.
 # sites <- read_csv(
@@ -119,6 +123,12 @@ cover <- left_join(cover, sites)
 # 'cover' is the tidy dataframe (tibble) for all further use. We can delete the
 # intermediate objects to keep our environment cleaner (but I wont for now).
 # rm(all.transects.species, sites, species, transects)
+
+###############################################################################
+## For soem plots, we will want total woody cover (for example, to graph
+## proportional cover of armed plants relative to total cover)
+total_cover <- group_by(cover, elev, transect) %>%
+  summarize(total_cover = sum(cover))
 
 ###############################################################################
 ## Some quick and dirty example analyses and figures
@@ -156,8 +166,12 @@ ggplot(trees.cover, aes(elev, pcover)) + geom_boxplot() +
 suc <- subset(gf.cover, grepl("succulent", growth_form, fixed = TRUE))
 ggplot(suc, aes(elev, pcover)) + geom_boxplot() +
   xlab("Elevation (m)") +
-  ylab("Proportional cover")
+  ylab("Succulent cover")
 
+# what about proportionally to all woody plant cover?
+suc <- left_join(suc, total_cover)
+ggplot(suc, aes(elev, pcover / total_cover)) + geom_boxplot() +
+  ylab("Proportional cover of succulents relative to all woody plants")
 
 
 ## Let's try summarizing by a plant family
@@ -187,12 +201,22 @@ con.plot <- ggplot(conifer.cover, aes(elev, pcover)) + geom_boxplot() +
 
 con.plot
 
-## By defense
-by_defense <- cover %>% group_by(elev, transect, armed)
-armed_cover <- summarize(by_defense, pcover = sum(cover))
+## Defenses
+armed_cover <- filter(cover, armed) %>% group_by(elev, transect) %>%
+  summarize(armed_cover=sum(cover))
+armed_cover <- left_join(armed_cover, total_cover)
 
-ggplot(armed_cover, aes(elev, pcover, color=armed)) +
-  geom_boxplot()
+ggplot(armed_cover, aes(elev, armed_cover / total_cover)) +
+  geom_boxplot() +
+  xlab("Elevation (m)") +
+  ylab("Proportional cover of armed species")
+ggsave("./results/armed_cover_by_elev.pdf")
+
+
+## by_defense <- cover %>% group_by(elev, transect, armed)
+## armed_cover <- summarize(by_defense, pcover = sum(cover))
+## ggplot(armed_cover, aes(elev, pcover, color=armed)) +
+##   geom_boxplot()
 
 
 ###############################################################################
