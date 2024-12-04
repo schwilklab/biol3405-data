@@ -112,7 +112,3 @@ wp_diff <- genus_means$mean_pd - genus_means$mean_md
 cor.test(wp_diff, genus_means$mean_LMA)
 
 
-
-
-
-
