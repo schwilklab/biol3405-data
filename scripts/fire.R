@@ -443,5 +443,21 @@ ggplot(overlaps_by_transect, aes(elev, overlap_dist, color=pair_type)) +
 # 2. Determine if co-occurring same-family species are fire adapted or not,
 # also by elevation.
 
+## I think you need to calculate the distribution of same family & same
+## FA for each elevation and the alternate would be same family &
+## different FA. 
 
-## DWS; I don't understand this exactly.
+neighbors_by_elev <- mutate(neighbors_by_elev,
+           fam_by_FA = case_when(
+             (pair_type != "one_FA") & (family == prev_family) ~ "sameFam_sameFA",
+             (pair_type == "one_FA") & (family == prev_family) ~ "sameFam_diffFA",
+             .default = "diffFam")) %>%
+  group_by(elev, transect, fam_by_FA)
+
+overlaps_by_transect <- neighbors_by_elev %>%
+  summarize(overlap_dist = mean(overlap_dist))
+
+ggplot(overlaps_by_transect, aes(elev, overlap_dist, color=fam_by_FA)) +
+  geom_boxplot()
+
+## sameFam_diffFA does not seem to occur in the data?
