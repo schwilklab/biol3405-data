@@ -358,7 +358,9 @@ ggsave("./results/all.fam.ft_cover_by_elev.pdf")
 
 ###want to plot FRI by elevation on top of that ##this isnt woring
 
-SM_FRI <- read_csv("SM FRI.csv")
+SM_FRI <- read_csv("./data/sacramentos/SM_FRI.csv")
+## DWS: Avoid spaces in filenames Organize code so that all data is read in and
+## cleaned BEFORE any analysis. This is unwieldy.
 
 FRI <- c(27, 6, 10)
   
@@ -408,14 +410,12 @@ neighbors.famfire <- mutate(neighbors.fam,
 
 nrow(filter(neighbors.famfire, overlap))
 
-nrow(filter(neighbors.famfire, overlap & family != prev_family +
-            fire.adapted != prev_fire))
+nrow(filter(neighbors.famfire, overlap & (family != prev_family) &
+            (fire.adapted != prev_fire)))
 
-## want to do this by elevation too. 
-
+## want to do this by elevation too.
 
 ## email from Anna 2024-12-04:
-
 
 ## I was able to plot proportion of cover of fire-adapted and non-fire adapted
 ## species by elevation (check out my figures! do they look all right?), but I
@@ -424,5 +424,24 @@ nrow(filter(neighbors.famfire, overlap & family != prev_family +
 # 1. Determine the distances between fire-adapted species (and separately,
 # non-fire adapted species) by elevation
 
+neighbors_by_elev <- neighbors.famfire %>% filter(!is.na(overlap)) %>%
+  mutate(pair_type = case_when(
+         fire.adapted & prev_fire ~ "both_FA",
+         !fire.adapted & !prev_fire ~ "neither_FA",
+         xor(fire.adapted, prev_fire) ~ "one_FA",
+         .default = "other") # should not happen
+         ) %>%
+  group_by(elev, transect, pair_type)
+
+overlaps_by_transect <- neighbors_by_elev %>%
+  summarize(overlap_dist = mean(overlap_dist))
+
+ggplot(overlaps_by_transect, aes(elev, overlap_dist, color=pair_type)) +
+  geom_boxplot()
+
+
 # 2. Determine if co-occurring same-family species are fire adapted or not,
 # also by elevation.
+
+
+## DWS; I don't understand this exactly.
