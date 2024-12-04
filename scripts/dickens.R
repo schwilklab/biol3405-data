@@ -105,6 +105,13 @@ lma_tlp_plot
 ggsave("./results/lma_tlp.pdf", plot=lma_tlp_plot, height=8, width=8, units="cm")
 
 
+## Request from Zander 2024-12-04:
+
+## correlation test:
+wp_diff <- genus_means$mean_pd - genus_means$mean_md
+cor.test(wp_diff, genus_means$mean_LMA)
+
+
 
 
 
