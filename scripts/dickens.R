@@ -88,22 +88,25 @@ ggplot(genus_means, aes(mean_LMA, mean_pd, color=genus)) +
 ## and the Y would be average turgor loss point for the four genus’ that
 ## we have.
 
+simple_theme <-  theme(panel.border = element_rect(size = 1.6, fill=NA),
+                       panel.grid.minor = element_blank(),
+                       panel.grid.major = element_blank(),
+                       panel.background = element_rect(size = 1.6, fill = NA),
+                       legend.background = element_rect(fill = "transparent"),
+                       legend.key = element_rect(fill="transparent"))
+ 
+
+
 lma_tlp_plot <- ggplot(genus_means, aes(mean_LMA, tlp, color=genus)) +
   geom_point(size=3) +
   labs(x =expression(paste("Leal mass per area (", g~m^-2, ")")),
        y = "Turgor loss point (MPa)") +
+  simple_theme +
   theme(legend.title = element_blank(),
-        panel.border = element_rect(size = 1.6, fill=NA),
-        panel.grid.minor = element_blank(),
-        panel.grid.major = element_blank(),
-        panel.background = element_rect(size = 1.6, fill = NA),
-        legend.background = element_rect(fill = "transparent"),
-        legend.key = element_rect(fill="transparent"),
         legend.text = element_text(face="italic"))
        # legend.position = c(.7, 0.72))
 lma_tlp_plot
 ggsave("./results/lma_tlp.pdf", plot=lma_tlp_plot, height=8, width=8, units="cm")
-
 
 ## Request from Zander 2024-12-04:
 
@@ -111,4 +114,37 @@ ggsave("./results/lma_tlp.pdf", plot=lma_tlp_plot, height=8, width=8, units="cm"
 wp_diff <- genus_means$mean_pd - genus_means$mean_md
 cor.test(wp_diff, genus_means$mean_LMA)
 
+## More requests: There was also one more figure we were hoping to get. We were
+## hoping to show relative rooting depth versus average predawn water potential
+## for species. Maybe we could have two graphs right next to each other, one
+## for shallow rooters and one for deep rooters? Celtis, Prunus, and Juniper
+## are relatively shallow. Prosopis, Rhus, and Sarcomphalus are relatively
+## deep.
+ 
+root_predawn_plot <- ggplot(dickens, aes(rooting, predawn_wp, color=genus)) +
+  geom_point(size=3, alpha=0.9,
+             position=position_jitter(width=0.05, height=0)) +
+  simple_theme
+
+root_predawn_plot
+
+## I was also wondering if there might be a way to show if there’s a
+## statistical difference between the predawn water potentials for shallow
+## versus deep rooters.
+
+## DWS: Well, we can see from figure that there is no effect. We can run a two
+## way anova with genus as fixed effect:
+pd_mod <- lm(data=dickens, predawn_wp ~ rooting + genus)
+summary(pd_mod)
+anova(pd_mod)
+
+## Species effect but no rooting effect. So, species differ but not explained
+## by rooting depth.
+
+## Conceptually, genus is really a random eeffect (mixed model) but with that
+## won't fit with so few genera. We could do the (wrong) naive simple linear
+## model ignoring that observations are nested within species:
+pd_mod2 <- lm(data=dickens, predawn_wp ~ rooting)
+summary(pd_mod2)
+# No effect
 

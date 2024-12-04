@@ -1,7 +1,7 @@
-spcode,genus,species,family,notes
-CELA,Celtis,occidentalis,Cannabaceae,
-PRAN3,Prunus,angustifolia,Rosaceae,
-JUPI,Juniperus,pinchotii,Cupressaceae,
-PRGL2,Prosopis,glandulosa,Fabaceae,
-RHTR,Rhus,aromatica,Anacardiaceae,synonym with R. trilobata
-ZIOB,Sarcomphalus,obtusifolius,Rhamnaceae,former name Ziziphus
+spcode,genus,species,family,notes,rooting
+CELA,Celtis,occidentalis,Cannabaceae,,shallow
+PRAN3,Prunus,angustifolia,Rosaceae,,shallow
+JUPI,Juniperus,pinchotii,Cupressaceae,,shallow
+PRGL2,Prosopis,glandulosa,Fabaceae,,deep
+RHTR,Rhus,aromatica,Anacardiaceae,synonym with R. trilobata,deep
+ZIOB,Sarcomphalus,obtusifolius,Rhamnaceae,former name Ziziphus,deep
