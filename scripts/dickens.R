@@ -18,7 +18,8 @@ leaves <- read_csv("data/dickens/leaf_area.csv")
 pv_leaves <- read_csv("data/dickens/pv_leaf_dickens.csv")
 
 ## Calculate LMA and leaf size trait:
-leaves <- mutate(leaves, LMA=dry_mass/leaf_area, leaf_size=leaf_area/n_leaves)
+## convert leaf area from cm^2 to m^2
+leaves <- mutate(leaves, leaf_area = leaf_area/(10000), LMA=dry_mass/leaf_area, leaf_size=leaf_area/n_leaves)
 
 # Merge water potential data with leaf trait data and then with species info
 
@@ -80,3 +81,31 @@ ggplot(dickens, aes(predawn_wp, predawn_wp-midday_wp, color=genus)) +
 
 ggplot(genus_means, aes(mean_LMA, mean_pd, color=genus)) +
   geom_point(size=3)
+
+
+## Figure request by Esther, Lauren, Zak group:
+## For one of the graphs, the x axis would be average LMA for each genus
+## and the Y would be average turgor loss point for the four genus’ that
+## we have.
+
+lma_tlp_plot <- ggplot(genus_means, aes(mean_LMA, tlp, color=genus)) +
+  geom_point(size=3) +
+  labs(x =expression(paste("Leal mass per area (", g~m^-2, ")")),
+       y = "Turgor loss point (MPa)") +
+  theme(legend.title = element_blank(),
+        panel.border = element_rect(size = 1.6, fill=NA),
+        panel.grid.minor = element_blank(),
+        panel.grid.major = element_blank(),
+        panel.background = element_rect(size = 1.6, fill = NA),
+        legend.background = element_rect(fill = "transparent"),
+        legend.key = element_rect(fill="transparent"),
+        legend.text = element_text(face="italic"))
+       # legend.position = c(.7, 0.72))
+lma_tlp_plot
+ggsave("./results/lma_tlp.pdf", plot=lma_tlp_plot, height=8, width=8, units="cm")
+
+
+
+
+
+
