@@ -243,3 +243,28 @@ nrow(filter(neighbors, overlap & growth_form != prev_gf))
 # model expectation probably based on probability of any neighbor being same
 # growth form.
 
+
+## For Geo 2024-12-05:
+
+by_elev_gf <- group_by(cover, elev, transect, growth_form)
+gf.cover <- summarize(by_elev_gf, pcover = sum(cover)) %>%
+  na.omit()
+
+ggplot(gf.cover, aes(elev, pcover)) + geom_boxplot() +
+  facet_grid(. ~ growth_form) +
+  xlab("Elevation (m)") +
+  ylab("Proportional cover")
+
+# or
+ggplot(gf.cover, aes(elev, pcover)) + geom_boxplot() +
+  facet_grid(growth_form ~ ., scales="free") +
+  xlab("Elevation (m)") +
+  ylab("Proportional cover")
+
+# or
+
+ggplot(gf.cover, aes(elev, pcover, color=growth_form)) + geom_boxplot() +
+  xlab("Elevation (m)") +
+  ylab("Proportional cover") +
+  theme(legend.title=element_blank())
+
