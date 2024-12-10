@@ -125,7 +125,7 @@ cover <- left_join(cover, sites)
 # rm(all.transects.species, sites, species, transects)
 
 ###############################################################################
-## For soem plots, we will want total woody cover (for example, to graph
+## For some plots, we will want total woody cover (for example, to graph
 ## proportional cover of armed plants relative to total cover)
 total_cover <- group_by(cover, elev, transect) %>%
   summarize(total_cover = sum(cover))
@@ -134,6 +134,11 @@ total_cover <- group_by(cover, elev, transect) %>%
 ## Some quick and dirty example analyses and figures
 ###############################################################################
 
+## Richness by transect then by site:
+richness <- filter(cover, cover > 0) %>% group_by(elev, transect) %>% summarize(S = n())
+mrich_by_site <- group_by(richness, elev) %>% summarize(mS = mean(S))
+mrich_by_site
+rich_by_site <-  filter(cover, cover > 0) %>% group_by(elev) %>% summarize(S = length(unique(spcode)))
 ## Summarize proportional cover by transect and by growth form
 by_elev_gf <- group_by(cover, elev, transect, growth_form)
 gf.cover <- summarize(by_elev_gf, pcover = sum(cover))
@@ -177,6 +182,13 @@ ggplot(suc, aes(elev, pcover / total_cover)) + geom_boxplot() +
 ## Let's try summarizing by a plant family
 by_elev_family <- group_by(cover, elev, transect, family)
 family.cover <- summarize(by_elev_family, pcover = sum(cover))
+
+by_family <- group_by(cover, transect, family)
+family.cover <- summarize(by_family, pcover = sum(cover))
+family.cover <- group_by(family.cover, family)
+family.table <- summarize(family.cover, pcover=mean(pcover))
+family.table
+family.table <- family.table %>% mutate(prop_cover = pcover/sum(pcover))
 
 ## Look at Fabaceae (the bean/pea family):
 fabaceae <- subset(family.cover, family=="Fabaceae")
