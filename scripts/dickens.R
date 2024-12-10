@@ -35,32 +35,35 @@ nrow(dickens)
 ## print column names:
 names(dickens)
 
-########################################################
-# Selecting the traits from pv_leaves that doesn't overlap with
-# leaves and merge with dickens by spcode
-#################################################################
-
-pv_leaves <- pv_leaves %>%
-  dplyr::select(- c("lma", "leaf_area"))
-
-dickens <- left_join(dickens, pv_leaves, by = "spcode")
 
 ## Summarize water potential and trait values by genus. This is the same as
-## sumamrizing by species because we have no genera with more than one species
+## summarizing by species because we have no genera with more than one species
 ## here.
-by_genus <- group_by(dickens, genus)
+by_genus <- group_by(dickens, genus, spcode)
 genus_means <- summarize(by_genus, mean_pd=mean(predawn_wp), mean_md=mean(midday_wp),
-          mean_lsize = mean(leaf_size, na.rm=TRUE), mean_LMA = mean(LMA, na.rm=TRUE),
-          mean_ldmc = mean(ldmc, na.rm = TRUE),
-          leaf_length = mean(leaf_length, na.rm = TRUE),
-          tlp = mean(tlp, na.rm = TRUE),
-          rwc_tlp = mean(rwc_tlp, na.rm = TRUE),
-          capacitance_above_tlp = mean(capacitance_above_tlp, na.rm = TRUE),
-          capacitance_below_tlp = mean(capacitance_below_tlp, na.rm = TRUE),
-          modulus_elasticity = mean(modulus_elasticity, na.rm = TRUE),
-          swc = mean(swc, na.rm = TRUE),
-          osmotic_potential = mean(osmotic_potential, na.rm = TRUE))
-          
+          mean_lsize = mean(leaf_size, na.rm=TRUE), mean_LMA = mean(LMA, na.rm=TRUE))
+          ## mean_ldmc = mean(ldmc, na.rm = TRUE),
+          ## leaf_length = mean(leaf_length, na.rm = TRUE),
+          ## tlp = mean(tlp, na.rm = TRUE),
+          ## rwc_tlp = mean(rwc_tlp, na.rm = TRUE),
+          ## capacitance_above_tlp = mean(capacitance_above_tlp, na.rm = TRUE),
+          ## capacitance_below_tlp = mean(capacitance_below_tlp, na.rm = TRUE),
+          ## modulus_elasticity = mean(modulus_elasticity, na.rm = TRUE),
+          ## swc = mean(swc, na.rm = TRUE),
+          ## osmotic_potential = mean(osmotic_potential, na.rm = TRUE))
+########################################################
+# Selecting the traits from pv_leaves that do not overlap with
+# leaves and merge with dickens by spcode
+#################################################################
+         
+pv_leaves <- pv_leaves %>%
+  dplyr::select(- c("lma", "leaf_area"))
+genus_means <- left_join(genus_means, pv_leaves, by = "spcode")
+
+## DWS: above is misleading -- really should join just with species means.
+## Doing the above implies data that does not exist.
+
+
 
 # Water potential figures
 ggplot(dickens, aes(predawn_wp, midday_wp, color=genus)) +
@@ -148,3 +151,24 @@ pd_mod2 <- lm(data=dickens, predawn_wp ~ rooting)
 summary(pd_mod2)
 # No effect
 
+
+
+## Test of variances for Esther:
+var(filter(dickens, rooting=="shallow")$predawn_wp)
+# [1] 0.7171429
+var(filter(dickens, rooting=="deep")$predawn_wp)
+# 1.868077
+
+
+var.test(predawn_wp ~ rooting, data=dickens)
+
+## 	F test to compare two variances
+
+## data:  predawn_wp by rooting
+## F = 2.6049, num df = 12, denom df = 14, p-value = 0.09066
+## alternative hypothesis: true ratio of variances is not equal to 1
+## 95 percent confidence interval:
+##  0.8540183 8.3518228
+## sample estimates:
+## ratio of variances 
+##           2.60488
