@@ -2,12 +2,23 @@
 # collected by BIOL 3404 class in the Sacramento Mountains of New Mexico on
 # September 28 and 29, 2024.
 
+# edited 2026-10-14 and added 2026 data (Collected October 3-4th 2026).
+
 library(dplyr)
 library(ggplot2)
 library(stringr)
+library(readr)
 
 ## Read transects
-transects <- read.csv("./data/sacramentos/transects.csv", stringsAsFactors= FALSE)
+transects_2024 <- read_csv("./data/sacramentos/transects_2024.csv")
+transects_2026 <- read_csv("./data/sacramentos/transects_2026.csv")
+transects_2024$year <- 2024
+transects_2026$year <- 2026
+transects_2024$transect <- as.character(transects_2024$transect)
+transects_2026$transect <- as.character(transects_2026$transect)
+
+transects <- bind_rows(transects_2024, transects_2026)
+transects <- mutate(transect = paste(transect, transect, sep=""))
 
 ## Turn transect column into globally unique ids. This is necessary for later
 ## expand.grid and gives us a single column that uniquely identifies a
