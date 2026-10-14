@@ -1,18 +1,16 @@
 spcode,genus,specific_epithet,family,growth_form,defense ,notes
+(ash),,,,shrub/tree,U,Probably Fraxinus velutina
 (broad-leaf-aster),,,Asteraceae,subshrub,U,broad deltoid leaves
-(condalia),,,Rhamnaceae,shrub,A,
 (dinedv),,,,,,mystery entered as DINEDV
 (hedgehog),,,Cactaceae,succulent,A,
-(little-mesquite),,,Fabaceae,shrub,A,
+(little-mesquite),,,Fabaceae,shrub,A,DALFOR?
 (mystery-aster),,,Asteraceae,subshrub,U,
 (opuntia),Opuntia,,Cactaceae,succulent,A,at CALICO
-(quercus),Quercus,,Fagaceae,shrub/tree,U,at CALICO and BRIDAL
 (ribes1),Ribes,,Grossulariaceae,shrub,A,
-(ribes2),Ribes,,Grossulariaceae,shrub,A,
+(ribes2),Ribes,,Grossulariaceae,shrub,A,Probably same ribes
 (sagebrush-like),,,Asteraceae,shrub,U,
-(unk-fine),,,Asteraceae,subshrub,U,fine leaves
 ABICON,Abies,concolor,Pinaceae,tree,U,
-ACEGLA,Acer,glabrum,Sapindaceae,tree,U,
+ACEGLA,Acer,glabrum,Sapindaceae,tree,U,on limestone we could find A. grandidentatum in the Sacramentos
 AGANEO,Agave,neomexicana,Asparagaceae,succulent,A,
 ATRCAN,Atriplex,canescens,Chenopodiaceae,shrub,L,
 BRILAC,Brickellia,laciniata,Asteraceae,shrub,L,
@@ -28,6 +26,7 @@ JUNMON,Juniperus,monosperma,Cupressaceae,shrub/tree,U,
 KOBSPI,Koberlinia,spinosa,Koeberliniaceae,shrub,A,
 LARTRI,Larrea,tridentata,Zygophyllaceae,shrub,L,
 MAHHAE,Mahonia,haematocarpa,Berberidaceae,shrub,L,
+MENSCA,Menodora,scabra,Oleaceae,subshrub,U,at BLM
 NOLMIC,Nolinia,microcarpa,Asparagaceae,succulent,U,
 OPUMAC,Opuntia,macrocentra,Cactaceae,succulent,A,
 PARINC,Parthenium,incanum,Asteraceae,shrub,U,
@@ -40,9 +39,11 @@ PROGLA,Prosopis,glandulosa,Fabaceae,shrub/tree,A,
 PRUSER,Prunus,serotina,Rosaceae,tree,U,
 PSEMEN,Pseudotsuga,menziesii,Pinaceae,tree,U,
 QUEGAM,Quercus,gambelii,Fagaceae,tree,U,
+QUEGRI,Quercus,grisea,Fagaceae,shrub/tree,U,Bridal
 RHUMIC,Rhus,microphylla,Anacardeaceae,shrub,U,at BRIDAL
 RHUTRI,Rhus,trilobata,Anacardiaceae,shrub,L,
 ROBNEO,Robinia,neomexicana,Fabaceae,shrub/tree,A,
 ROSWOO,Rosa,woodsii,Rosaceae,shrub,A,
+SYMROT,symphoricarpos,rotundifolius,Caprifoliaceae,shrub,U,
 YUCBAC,Yucca,baccata,Asparagaceae,succulent,A,
-MENSCA,Menodora,scabra,Oleaceae,subshrub,U,at BLM
+ZIZOBT,Ziziphus,obtusifolia,Rhamnaceae,shrub,A,CALICO
