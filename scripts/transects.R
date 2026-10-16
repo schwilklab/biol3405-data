@@ -18,28 +18,35 @@ transects_2024$transect <- as.character(transects_2024$transect)
 transects_2026$transect <- as.character(transects_2026$transect)
 
 transects <- bind_rows(transects_2024, transects_2026)
+
+# create unique transect ids (within sites) by concatenating `group` to
+# original transect number
 transects$transect <- paste(transects$group, transects$transect, sep="")
 
-## Turn transect column into globally unique ids. This is necessary for later
+## Create  `unique.transect` column into globally unique ids. This is necessary for later
 ## expand.grid and gives us a single column that uniquely identifies a
 ## transect. If we did not do this, we would need two columns, "site" and
 ## "transect" to identify a given transect. Also calculate the distance each
 ## plant covers for every entry
 
-## DWS: Some folks messed up start and stop I assume by switching so we will
-## take absolute value for now:
+transects <- transects %>% mutate(site_transect = paste(site, transect, sep="."),
+                                  dist = stop-start)
 
-transects <- transects %>% 
-  mutate(group=substr(transect,1,1),
-         transect = paste(site, transect, sep="."),
-         dist = stop-start)
+## distances should all be positive.
+any(transects$dist <0)
+transects[which(transects$dist <0),]
+
+## DWS: In 2026, several groups have start values larger than stop values. We
+## should check those as they could be mistyped data entry errors. For now,
+## I'll assume that they simply switched the values and I'll take absolute
+## value for now:
 
 ## Now just get the cover by species. We don't need the raw start/stop points.
 ## Note that each transect was 50 m long, so the proportional cover of any
 ## group (species, family, growth form, etc) is just the sum of the distances
 ## in that transect divided by 50. We can summarize by species now and then sum
 ## across other categories later.
-cover <- group_by(transects, transect, spcode) %>% summarize(cover = sum(dist)/50)
+cover <- group_by(transects, site_transect, spcode) %>% summarize(cover = sum(dist)/50)
 
 
 ## This data is not complete because there are missing implied zeros!
@@ -51,7 +58,7 @@ cover <- group_by(transects, transect, spcode) %>% summarize(cover = sum(dist)/5
 ## case, they logically imply zero.
 
 # Use expand.grid to get all possible combinations of transect and species ids
-all.transects.species <- expand.grid(transect = unique(cover$transect),
+all.transects.species <- expand.grid(site_transect = unique(cover$site_transect),
                                      spcode=unique(cover$spcode))
 
 cover <- full_join(cover, all.transects.species)
@@ -66,9 +73,11 @@ cover$cover[is.na(cover$cover)] <- 0
 ## again, one could use mutate and case_when() for the above line.
 
 ## This data is not tidy: "site" is not its own column but is embedded in the
-## transect ids. We must grab `site` as its own column because we will need it
-## for analyses:
-cover <- mutate(cover, site = str_split_fixed(transect, "\\.", n=2)[,1])
+## site_transect ids. We did that to simplify the expand grid operation above.
+## Now we must grab `site` as its own column because we will need it for
+## analyses:
+cover <- mutate(cover, site = str_split_fixed(site_transect, "\\.", n=2)[,1],
+                transect = str_split_fixed(site_transect, "\\.", n=2)[,2])
 
 ## Read the species list. This gives us more info on each species. We can merge
 ## this with the transect data by 'spcode'. Here we give read.csv an explicit
@@ -85,27 +94,30 @@ species <- mutate(species, armed = defense %in% c("L", "A"))
 
 tspecies <- unique(transects$spcode)
 length(tspecies)
-# 73
+# 56
 sspecies <- species$spcode
 length(sspecies)
 
 unmatched <- tspecies[! tspecies %in% sspecies]
 unmatched
 length(unmatched)
-# 4
-## Still 4 to figure out and either give correct code or descriptions as an
-## unknown in parenthetical format
+# 2
+## Still 2 "species" that we need to figure out and either give them each a
+## correct code or provide a lowercase name and description
+filter(transects, spcode %in% unmatched)
 
 
+unused <- sspecies[! (sspecies %in% tspecies)]
+unused
 
 # Merge species info with transect data. Use merge() function and remember that
 # we want all rows from the transects data frame in the result. We don't need
 # unmatched rows in species as the file contains the full species list over
 # several years and some species were not found in 2011.
-cover <- merge(cover, species, all.x=TRUE)
+cover <- left_join(cover, species)
 
 # Read in elevations of each site and merge with cover data
-sites <- read.csv("./data/sacramentos/sites.csv", stringsAsFactors=FALSE, na.strings = "")
+sites <- read.csv("./data/sacramentos/sites.csv")
 
 ## Although elevation is numeric, it is really a categorical variable with six
 ## values. Let's ensure that ggplot will treat it as a categorical variable.
@@ -133,7 +145,7 @@ unique(transects$site)
 ## [1] 1454 1802 2042 2500 2744
 ## Levels: 1454 1802 2042 2500 2744
 
-## Good. Or were would need to use as.factor()
+## Good.
 
 cover <- left_join(cover, sites)
 
@@ -153,9 +165,19 @@ total_cover <- group_by(cover, elev, transect) %>%
 
 ## Richness by transect then by site:
 richness <- filter(cover, cover > 0) %>% group_by(elev, transect) %>% summarize(S = n())
+
+ggplot(richness, aes(elev, S)) + geom_boxplot()
+
+
 mrich_by_site <- group_by(richness, elev) %>% summarize(mS = mean(S))
 mrich_by_site
-rich_by_site <-  filter(cover, cover > 0) %>% group_by(elev) %>% summarize(S = length(unique(spcode)))
+
+# total richness by site
+rich_by_site <-  filter(cover, cover > 0) %>% group_by(elev) %>%
+  summarize(S = length(unique(spcode)))
+rich_by_site
+
+
 ## Summarize proportional cover by transect and by growth form
 by_elev_gf <- group_by(cover, elev, transect, growth_form)
 gf.cover <- summarize(by_elev_gf, pcover = sum(cover))
@@ -172,7 +194,7 @@ ggplot(trees, aes(elev, pcover)) + geom_boxplot() +
 
 ggsave("results/tree_cover_by_elev.pdf")
 
-## DWS: We could also pull out both "tree" and "shrub/tree" together, but we
+## We could also pull out both "tree" and "shrub/tree" together, but we
 ## need to do this BEFORE summarizing or we will end up with two values for
 ## each transect (one for the tree gf and one for "shrub_tree". We want a single
 ## combined value.
@@ -203,9 +225,15 @@ family.cover <- summarize(by_elev_family, pcover = sum(cover))
 by_family <- group_by(cover, transect, elev,family)
 family.cover <- summarize(by_family, pcover = sum(cover))
 family.cover <- group_by(family.cover, family)
+
+## table of mean cover by family across all transects
 family.table <- summarize(family.cover, pcover=mean(pcover))
 family.table
 family.table <- family.table %>% mutate(prop_cover = pcover/sum(pcover))
+
+# What were most common families?
+family.table %>% arrange(desc(prop_cover))
+
 
 ## Look at Fabaceae (the bean/pea family):
 fabaceae <- subset(family.cover, family=="Fabaceae")
@@ -262,15 +290,12 @@ neighbors <- transects %>% arrange(site, transect, start) %>%
 
 
 nrow(filter(neighbors, overlap))
-# 213 overlaps
 
 # of overlaps of same growth form:
 nrow(filter(neighbors, overlap & growth_form != prev_gf))
-# 117
 
-# So 96 are same gf and 117 are different. Testing this requires some null
-# model expectation probably based on probability of any neighbor being same
-# growth form.
+# Testing this requires some null model expectation probably based on
+# probability of any neighbor being same growth form.
 
 
 ## For Geo 2024-12-05:
