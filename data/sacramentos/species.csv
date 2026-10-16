@@ -1,23 +1,29 @@
 spcode,genus,specific_epithet,family,growth_form,defense ,notes
 (ash),,,Oleaceae,shrub/tree,U,Probably Fraxinus velutina
+(acer),Acer,,Sapindaceae,tree,U,Probably Acer glabrum 95% sure
 (broad-leaf-aster),,,Asteraceae,subshrub,U,broad deltoid leaves
 (echinocereus),,,Cactaceae,succulent,,Possible Echinocereus
 (hedgehog),,,Cactaceae,succulent,A,
 (little-mesquite),,,Fabaceae,shrub,A,DALFOR?
 (mystery-aster),,,Asteraceae,subshrub,U,
+(opposite-spade-leaf-sub-shrub),,,,subshrub,U,at BRIDAL
 (opuntia),Opuntia,,Cactaceae,succulent,A,at CALICO
 (ribes1),Ribes,,Grossulariaceae,shrub,A,
 (ribes2),Ribes,,Grossulariaceae,shrub,A,Probably same ribes
 (sagebrush-like),,,Asteraceae,shrub,U,
+(unknown-fabaceae),,,Fabaceae,,,2026 group EJF at  SLEEPY. is this Robinia?
+(2unknown-scrub-shrub),,,,,,Calico JSC group. What is this?
 ABICON,Abies,concolor,Pinaceae,tree,U,
 ACEGLA,Acer,glabrum,Sapindaceae,tree,U,on limestone we could find A. grandidentatum in the Sacramentos
 AGANEO,Agave,neomexicana,Asparagaceae,succulent,A,
+ALOWRI,Aloysia,wrightii,Verbenaceae,shrub,U,
 ATRCAN,Atriplex,canescens,Chenopodiaceae,shrub,L,
 BRILAC,Brickellia,laciniata,Asteraceae,shrub,L,
 CERBRE,Cercocarpus,breviflorus,Rosaceae,shrub,U,
 CHILIN,Chilopsis,linearis,Bignoniaceae,tree,U,
 CHRMEX,Chrysactinia,mexicana,Asteraceae,subshrub,L,
 DALFOR,Dalea,formosa,Fabaceae,shrub,U,
+DASWHE,Dasylirion,wheelerii,Asparagaceae,succulent,A,
 FOUSPL,Fouqueria,splendens,Fouqueriaceae,shrub,A,
 GYMGLU,Gymnospema,glutinosum,Asteraceae,subshrub,U,
 HOLDIS,Holodiscus,discolor,Rosaceae,shrub,U,
@@ -44,6 +50,8 @@ RHUMIC,Rhus,microphylla,Anacardeaceae,shrub,U,at BRIDAL
 RHUTRI,Rhus,trilobata,Anacardiaceae,shrub,L,
 ROBNEO,Robinia,neomexicana,Fabaceae,shrub/tree,A,
 ROSWOO,Rosa,woodsii,Rosaceae,shrub,A,
-SYMROT,symphoricarpos,rotundifolius,Caprifoliaceae,shrub,U,
+SYMROT,Symphoricarpos,rotundifolius,Caprifoliaceae,shrub,U,
+YUCELA,Yucca,elata,Asparagaceae,succulent,A,
 YUCBAC,Yucca,baccata,Asparagaceae,succulent,A,
+YUCFAX,Yucca,faxoniana,Asparagaceae,succulent,A,
 ZIZOBT,Ziziphus,obtusifolia,Rhamnaceae,shrub,A,CALICO
