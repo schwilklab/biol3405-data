@@ -2,17 +2,14 @@ spcode,genus,specific_epithet,family,growth_form,defense ,notes
 (ash),,,Oleaceae,shrub/tree,U,Probably Fraxinus velutina
 (acer),Acer,,Sapindaceae,tree,U,Probably Acer glabrum 95% sure
 (broad-leaf-aster),,,Asteraceae,subshrub,U,broad deltoid leaves
-(echinocereus),,,Cactaceae,succulent,,Possible Echinocereus
+(echinocereus),,,Cactaceae,succulent,A,Possible Echinocereus
 (hedgehog),,,Cactaceae,succulent,A,
-(little-mesquite),,,Fabaceae,shrub,A,DALFOR?
-(mystery-aster),,,Asteraceae,subshrub,U,
+(mystery-aster),,,Asteraceae,subshrub,U,No description
 (opposite-spade-leaf-sub-shrub),,,,subshrub,U,at BRIDAL
 (opuntia),Opuntia,,Cactaceae,succulent,A,at CALICO
 (ribes1),Ribes,,Grossulariaceae,shrub,A,
-(ribes2),Ribes,,Grossulariaceae,shrub,A,Probably same ribes
-(sagebrush-like),,,Asteraceae,shrub,U,
-(unknown-fabaceae),,,Fabaceae,,,2026 group EJF at  SLEEPY. is this Robinia?
-(2unknown-scrub-shrub),,,,,,Calico JSC group. What is this?
+(ribes2),Ribes,,Grossulariaceae,shrub,A,Probably same ribes1. Both armed. But need to confirm.
+(sagebrush-like),,,Asteraceae,shrub,U,Need to collect.
 ABICON,Abies,concolor,Pinaceae,tree,U,
 ACEGLA,Acer,glabrum,Sapindaceae,tree,U,on limestone we could find A. grandidentatum in the Sacramentos
 AGANEO,Agave,neomexicana,Asparagaceae,succulent,A,
@@ -31,7 +28,7 @@ JUNDEP,Juniperus,deppeana,Cupressaceae,tree,U,
 JUNMON,Juniperus,monosperma,Cupressaceae,shrub/tree,U,
 KOBSPI,Koberlinia,spinosa,Koeberliniaceae,shrub,A,
 LARTRI,Larrea,tridentata,Zygophyllaceae,shrub,L,
-MAHHAE,Mahonia,haematocarpa,Berberidaceae,shrub,L,
+MAHFRE,Mahonia,fremontiee,Berberidaceae,shrub,L,Check fruit color. haematocarpa is porbably synonym with fremontii anyway
 MENSCA,Menodora,scabra,Oleaceae,subshrub,U,at BLM
 NOLMIC,Nolinia,microcarpa,Asparagaceae,succulent,U,
 OPUMAC,Opuntia,macrocentra,Cactaceae,succulent,A,
@@ -51,6 +48,7 @@ RHUTRI,Rhus,trilobata,Anacardiaceae,shrub,L,
 ROBNEO,Robinia,neomexicana,Fabaceae,shrub/tree,A,
 ROSWOO,Rosa,woodsii,Rosaceae,shrub,A,
 SYMROT,Symphoricarpos,rotundifolius,Caprifoliaceae,shrub,U,
+TIQHIS,Tiquilia,hispidissima,Boraginaceae,subshrub,U,
 YUCELA,Yucca,elata,Asparagaceae,succulent,A,
 YUCBAC,Yucca,baccata,Asparagaceae,succulent,A,
 YUCFAX,Yucca,faxoniana,Asparagaceae,succulent,A,
