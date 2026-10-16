@@ -2,7 +2,7 @@
 ##
 ## Dylan Schwilk
 ##
-## Data from BIOL-3405 field trip to Dickens springs on 9/14/2024. Work
+## Data from BIOL-3405 field trips to Dickens Springs on 9/14/2024 and 9/19/2026. Work
 ## included predawn and midday water potentials
 
 library(readr)
