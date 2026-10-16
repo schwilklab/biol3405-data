@@ -18,7 +18,7 @@ transects_2024$transect <- as.character(transects_2024$transect)
 transects_2026$transect <- as.character(transects_2026$transect)
 
 transects <- bind_rows(transects_2024, transects_2026)
-transects <- mutate(transect = paste(transect, transect, sep=""))
+transects$transect <- paste(transects$group, transects$transect, sep="")
 
 ## Turn transect column into globally unique ids. This is necessary for later
 ## expand.grid and gives us a single column that uniquely identifies a
@@ -74,25 +74,29 @@ cover <- mutate(cover, site = str_split_fixed(transect, "\\.", n=2)[,1])
 ## this with the transect data by 'spcode'. Here we give read.csv an explicit
 ## NA string for character vectors --- otherwise empty fields would be
 ## considered the "" string.
-species <- read.csv("./data/sacramentos/species.csv", stringsAsFactors=FALSE,
-                    na.strings = "")
+species <- read.csv("./data/sacramentos/species.csv", na.strings = "")
+
 # This includes "defense" as a trait with values U, L or A. Let's get a binary
 # version of the trait as well:
-
 species <- mutate(species, armed = defense %in% c("L", "A"))
 
 
 ## DWS: let's make sure all of our species codes are in the species.csv data:
 
-## DWS: as of 2024-11-01 I fixed all missing. Still some unknowns
 tspecies <- unique(transects$spcode)
 length(tspecies)
-# was 51, now 41
+# 73
 sspecies <- species$spcode
 length(sspecies)
 
 unmatched <- tspecies[! tspecies %in% sspecies]
 unmatched
+length(unmatched)
+# 4
+## Still 4 to figure out and either give correct code or descriptions as an
+## unknown in parenthetical format
+
+
 
 # Merge species info with transect data. Use merge() function and remember that
 # we want all rows from the transects data frame in the result. We don't need
@@ -110,6 +114,8 @@ sites$elev <- as.factor(as.character(sites$elev))
 # might be useful in transects data too:
 transects <- transects %>% left_join(sites)
 
+# Check:
+unique(transects$site)
 
 ## alternatively, we could use readr::read_csv with a column type
 ## specification.
@@ -194,7 +200,7 @@ ggplot(suc, aes(elev, pcover / total_cover)) + geom_boxplot() +
 by_elev_family <- group_by(cover, elev, transect, family)
 family.cover <- summarize(by_elev_family, pcover = sum(cover))
 
-by_family <- group_by(cover, transect, family)
+by_family <- group_by(cover, transect, elev,family)
 family.cover <- summarize(by_family, pcover = sum(cover))
 family.cover <- group_by(family.cover, family)
 family.table <- summarize(family.cover, pcover=mean(pcover))
