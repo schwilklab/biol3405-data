@@ -29,7 +29,7 @@ transects$transect <- paste(transects$group, transects$transect, sep="")
 ## "transect" to identify a given transect. Also calculate the distance each
 ## plant covers for every entry
 
-transects <- transects %>% mutate(site_transect = paste(site, transect, sep="."),
+transects <- transects %>% mutate(site_transect_year = paste(site, transect, year, sep="."),
                                   dist = stop-start)
 
 ## distances should all be positive.
@@ -46,7 +46,7 @@ transects[which(transects$dist <0),]
 ## group (species, family, growth form, etc) is just the sum of the distances
 ## in that transect divided by 50. We can summarize by species now and then sum
 ## across other categories later.
-cover <- group_by(transects, site_transect, spcode) %>% summarize(cover = sum(dist)/50)
+cover <- group_by(transects, site_transect_year, spcode) %>% summarize(cover = sum(dist)/50)
 
 
 ## This data is not complete because there are missing implied zeros!
@@ -58,7 +58,7 @@ cover <- group_by(transects, site_transect, spcode) %>% summarize(cover = sum(di
 ## case, they logically imply zero.
 
 # Use expand.grid to get all possible combinations of transect and species ids
-all.transects.species <- expand.grid(site_transect = unique(cover$site_transect),
+all.transects.species <- expand.grid(site_transect_year = unique(cover$site_transect_year),
                                      spcode=unique(cover$spcode))
 
 cover <- full_join(cover, all.transects.species)
@@ -76,8 +76,9 @@ cover$cover[is.na(cover$cover)] <- 0
 ## site_transect ids. We did that to simplify the expand grid operation above.
 ## Now we must grab `site` as its own column because we will need it for
 ## analyses:
-cover <- mutate(cover, site = str_split_fixed(site_transect, "\\.", n=2)[,1],
-                transect = str_split_fixed(site_transect, "\\.", n=2)[,2])
+cover <- mutate(cover, site = str_split_fixed(site_transect_year, "\\.", n=3)[,1],
+                transect = str_split_fixed(site_transect_year, "\\.", n=3)[,2],
+                year = str_split_fixed(site_transect_year, "\\.", n=3)[,3])
 
 ## Read the species list. This gives us more info on each species. We can merge
 ## this with the transect data by 'spcode'. Here we give read.csv an explicit
@@ -156,7 +157,7 @@ cover <- left_join(cover, sites)
 ###############################################################################
 ## For some plots, we will want total woody cover (for example, to graph
 ## proportional cover of armed plants relative to total cover)
-total_cover <- group_by(cover, elev, transect) %>%
+total_cover <- group_by(cover, elev, transect, year) %>%
   summarize(total_cover = sum(cover))
 
 ###############################################################################
@@ -164,22 +165,26 @@ total_cover <- group_by(cover, elev, transect) %>%
 ###############################################################################
 
 ## Richness by transect then by site:
-richness <- filter(cover, cover > 0) %>% group_by(elev, transect) %>% summarize(S = n())
+richness <- filter(cover, cover > 0) %>% group_by(elev, transect, year) %>% summarize(S = n())
 
-ggplot(richness, aes(elev, S)) + geom_boxplot()
+richness_plot <- ggplot(richness, aes(elev, S)) + geom_boxplot()
+richness_plot
+# by year:
+richness_plot + facet_grid(year ~ .)
 
 
-mrich_by_site <- group_by(richness, elev) %>% summarize(mS = mean(S))
+mrich_by_site <- group_by(richness, elev, year) %>% summarize(mS = mean(S))
 mrich_by_site
 
 # total richness by site
-rich_by_site <-  filter(cover, cover > 0) %>% group_by(elev) %>%
+rich_by_site <-  filter(cover, cover > 0) %>% group_by(elev, year) %>%
   summarize(S = length(unique(spcode)))
 rich_by_site
 
 
+
 ## Summarize proportional cover by transect and by growth form
-by_elev_gf <- group_by(cover, elev, transect, growth_form)
+by_elev_gf <- group_by(cover, elev, year, transect, growth_form)
 gf.cover <- summarize(by_elev_gf, pcover = sum(cover))
 
 ## Just pull out trees
@@ -190,7 +195,8 @@ trees <- subset(gf.cover, growth_form=="tree")
 # and plot proportional tree cover by site
 ggplot(trees, aes(elev, pcover)) + geom_boxplot() +
   xlab("Elevation (m)") +
-  ylab("Proportional cover")
+  ylab("Proportional cover") +
+  facet_grid(year ~ .)
 
 ggsave("results/tree_cover_by_elev.pdf")
 
@@ -199,18 +205,28 @@ ggsave("results/tree_cover_by_elev.pdf")
 ## each transect (one for the tree gf and one for "shrub_tree". We want a single
 ## combined value.
 trees <- subset(cover, grepl("tree", growth_form, fixed = TRUE))
-trees.cover <- group_by(trees, transect, elev) %>% summarize(pcover = sum(cover))
-ggplot(trees.cover, aes(elev, pcover)) + geom_boxplot() +
+trees.cover <- group_by(trees, elev, year, transect) %>% summarize(pcover = sum(cover))
+trees_plot <- ggplot(trees.cover, aes(elev, pcover)) + geom_boxplot() +
   xlab("Elevation (m)") +
   ylab("Proportional cover")
+
+trees_plot
+
+# by year:
+trees_plot + facet_grid(year ~ .)
 
 
 # succulents?
 
+# allyears:
 suc <- subset(gf.cover, grepl("succulent", growth_form, fixed = TRUE))
-ggplot(suc, aes(elev, pcover)) + geom_boxplot() +
+suc_plot <- ggplot(suc, aes(elev, pcover)) + geom_boxplot() +
   xlab("Elevation (m)") +
   ylab("Succulent cover")
+suc_plot
+
+suc_plot + facet_grid(year ~ .)
+
 
 # what about proportionally to all woody plant cover?
 suc <- left_join(suc, total_cover)
@@ -219,10 +235,10 @@ ggplot(suc, aes(elev, pcover / total_cover)) + geom_boxplot() +
 
 
 ## Let's try summarizing by a plant family
-by_elev_family <- group_by(cover, elev, transect, family)
+by_elev_family <- group_by(cover, elev, year, transect, family)
 family.cover <- summarize(by_elev_family, pcover = sum(cover))
 
-by_family <- group_by(cover, transect, elev,family)
+by_family <- group_by(cover, elev, year, transect, family)
 family.cover <- summarize(by_family, pcover = sum(cover))
 family.cover <- group_by(family.cover, family)
 
@@ -235,7 +251,7 @@ family.table <- family.table %>% mutate(prop_cover = pcover/sum(pcover))
 family.table %>% arrange(desc(prop_cover))
 
 
-## Look at Fabaceae (the bean/pea family):
+## Look at Fabaceae (the bean/pea family) across all years:
 fabaceae <- subset(family.cover, family=="Fabaceae")
 
 fab.plot <- ggplot(fabaceae, aes(elev, pcover)) + geom_boxplot() +
@@ -250,13 +266,16 @@ conifer_families <- c("Pinaceae", "Cupressaceae")
 ## We need to start at with species cover data not family here. Think about why!
 
 conifers <-  subset(cover, family %in% conifer_families)
-conifer.cover <- group_by(conifers, elev, transect) %>% summarize(pcover=sum(cover))
+conifer.cover <- group_by(conifers, elev, year, transect) %>% summarize(pcover=sum(cover))
 
 con.plot <- ggplot(conifer.cover, aes(elev, pcover)) + geom_boxplot() +
   xlab("Elevation (m)") +
   ylab("Proportional cover")
 
 con.plot
+
+# by year:
+con.plot + facet_grid(year ~ .)
 
 ## Defenses
 armed_cover <- filter(cover, armed) %>% group_by(elev, transect) %>%
