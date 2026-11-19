@@ -95,15 +95,22 @@ species <- mutate(species, armed = defense %in% c("L", "A"))
 
 tspecies <- unique(transects$spcode)
 length(tspecies)
-# 56
+# 54
 sspecies <- species$spcode
 length(sspecies)
 
 unmatched <- tspecies[! tspecies %in% sspecies]
 unmatched
+
+## [1] "(heliantas)"            "(asteraceae)"           "(unknown-fabaceae)"    
+## [4] "(jjaunk)"               "(2unknown-scrub-shrub)"
+
+# Whose are these? Why are they still not in the species file? The team that
+# named these needs to rpovide the data still.
+
 length(unmatched)
-# 2
-## Still 2 "species" that we need to figure out and either give them each a
+# 5
+## Still 5 "species" that we need to figure out and either give them each a
 ## correct code or provide a lowercase name and description
 filter(transects, spcode %in% unmatched)
 
