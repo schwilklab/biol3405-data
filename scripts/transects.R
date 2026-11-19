@@ -348,3 +348,32 @@ ggplot(gf.cover, aes(elev, pcover, color=growth_form)) + geom_boxplot() +
   ylab("Proportional cover") +
   theme(legend.title=element_blank())
 
+
+
+#### LMA code
+
+sac_lma <- read.csv("./data/sacramentos/lma_2026.csv")
+
+# calculate lma in m^2 / kg and leaf area in cm^2
+sac_lma <- mutate(sac_lma, LMA = dry_mass/leaf_area * 0.1,
+                  LA = leaf_area/leaf_or_needle_number)
+lma_sum <- sac_lma %>% group_by(spcode) %>%
+  summarize(LMA = mean(LMA), LA = mean(LA))
+
+
+# Filter data set to just species for which we have LMA:
+lma_cover <- filter(cover, spcode %in% lma_sum$spcode)
+lma_cover <- left_join(lma_cover, lma_sum) %>% left_join(total_cover) %>%
+  mutate(wLMA = LMA*cover/total_cover, wLA = LA*cover/total_cover)
+
+lma_by_transect <- lma_cover %>% group_by(elev, site, transect, year) %>%
+  summarize(wLMA = sum(wLMA), wLA = sum(wLA))
+
+ggplot(lma_by_transect, aes(elev, wLMA)) + geom_boxplot() + facet_grid(. ~ year) +
+  xlab("Elevation (m)") +
+  ylab("Weighted mean LMA (kg^2 / m^2)")
+
+
+ggplot(lma_by_transect, aes(elev, wLA)) + geom_boxplot() + facet_grid(. ~ year) +
+  xlab("Elevation (m)") +
+  ylab("Weighted mean leaf area (cm^2)")
