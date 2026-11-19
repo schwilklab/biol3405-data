@@ -363,17 +363,21 @@ lma_sum <- sac_lma %>% group_by(spcode) %>%
 
 # Filter data set to just species for which we have LMA:
 lma_cover <- filter(cover, spcode %in% lma_sum$spcode)
-lma_cover <- left_join(lma_cover, lma_sum) %>% left_join(total_cover) %>%
-  mutate(wLMA = LMA*cover/total_cover, wLA = LA*cover/total_cover)
 
+# create new columns, wLMA and wLA which are species specific LMA multiplied by
+# proportional cover
+lma_cover <- left_join(lma_cover, lma_sum) %>%
+  mutate(wLMA = LMA*cover, wLA = LA*cover)
+
+# calculate the weighted means
 lma_by_transect <- lma_cover %>% group_by(elev, site, transect, year) %>%
-  summarize(wLMA = sum(wLMA), wLA = sum(wLA))
+  summarize(tcover = sum(cover), wLMA = sum(wLMA/tcover), wLA = sum(wLA)/tcover)
 
 ggplot(lma_by_transect, aes(elev, wLMA)) + geom_boxplot() + facet_grid(. ~ year) +
   xlab("Elevation (m)") +
-  ylab("Weighted mean LMA (kg^2 / m^2)")
-
+  ylab(expression(paste("Weighted mean LMA (", kg^2 / m^2, ")")))
+ggsave("./results/LMA_by_elev.pdf")
 
 ggplot(lma_by_transect, aes(elev, wLA)) + geom_boxplot() + facet_grid(. ~ year) +
   xlab("Elevation (m)") +
-  ylab("Weighted mean leaf area (cm^2)")
+  ylab(expression(paste("Weighted mean leaf area (", cm^2, ")")))
